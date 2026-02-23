@@ -17,10 +17,22 @@ const loadPlugins = async () => {
     try {
         if (!fs.existsSync(pluginsDir)) fs.mkdirSync(pluginsDir)
 
-        const files = fs.readdirSync(pluginsDir).filter(f => f.endsWith('.js'))
+        const getFiles = (dir) => {
+            const entries = fs.readdirSync(dir, { withFileTypes: true })
+            const files = entries
+                .filter(file => !file.isDirectory() && file.name.endsWith('.js'))
+                .map(file => path.join(dir, file.name))
+            const folders = entries.filter(file => file.isDirectory())
+            for (const folder of folders) {
+                files.push(...getFiles(path.join(dir, folder.name)))
+            }
+            return files
+        }
+
+        const files = getFiles(pluginsDir)
 
         for (const file of files) {
-            const pluginPath = `file://${path.join(pluginsDir, file)}`
+            const pluginPath = `file://${file}`
             const module = await import(pluginPath)
 
             if (module.default && module.default.name) {
