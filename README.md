@@ -32,11 +32,11 @@ graph TD
 
 1. **Clone & Install**:
 
-    ```bash
-    git clone https://github.com/yemo-dev/biohazard-botz.git
-    cd biohazard-botz
-    npm install
-    ```
+```bash
+git clone https://github.com/yemo-dev/biohazard-botz.git
+cd biohazard-botz
+npm install
+```
 
-2. **Configure**: Edit `src/config.js` to set your owner number and prefixes.
-3. **Run**: `npm start` and follow the pairing code in your terminal.
+1. **Configure**: Edit `src/config.js` to set your owner number and prefixes.
+2. **Run**: `npm start` and follow the pairing code in your terminal.
