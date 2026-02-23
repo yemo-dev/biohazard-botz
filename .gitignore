@@ -1,0 +1,6 @@
+node_modules/
+auth_info_baileys/
+.env
+npm-debug.log
+yarn-error.log
+package-lock.json

@@ -1,0 +1,116 @@
+import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } from 'baileys'
+import pino from 'pino'
+import { Boom } from '@hapi/boom'
+import readline from 'readline'
+import NodeCache from 'node-cache'
+import logger from './src/utils/logger.js'
+import config from './src/config.js'
+import { handleMessage } from './src/handler.js'
+
+/** Simple readline interface for interactive pairing code request **/
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+const question = (text) => new Promise((resolve) => rl.question(text, resolve))
+
+const msgRetryCounterCache = new NodeCache()
+const groupCache = new NodeCache({ stdTTL: 5 * 60, useClones: false })
+
+async function connectToWhatsApp() {
+    /** Clear terminal across all OS (Windows, Linux, macOS) **/
+    console.clear()
+
+    const { state, saveCreds } = await useMultiFileAuthState(config.sessionName)
+
+    /** Auto Session Cleanup every 30 mins **/
+    setInterval(() => {
+        try {
+            const sessionDir = path.resolve(`./${config.sessionName}`)
+            if (fs.existsSync(sessionDir)) {
+                const files = fs.readdirSync(sessionDir)
+                let deletedFiles = 0
+                for (const file of files) {
+                    if (file !== 'creds.json') {
+                        fs.unlinkSync(path.join(sessionDir, file))
+                        deletedFiles++
+                    }
+                }
+                if (deletedFiles > 0) {
+                    logger.info(`Session Cleanup: Deleted ${deletedFiles} old state files.`)
+                }
+            }
+        } catch (err) {
+            logger.error(`Session Cleanup Error: ${err.message}`)
+        }
+    }, 30 * 60 * 1000)
+
+    const { version, isLatest } = await fetchLatestBaileysVersion()
+
+    logger.info(`using WA v${version.join('.')}, isLatest: ${isLatest}`)
+
+    const socketConfig = {
+        version,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false,
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
+        },
+        msgRetryCounterCache,
+        generateHighQualityLinkPreview: true,
+        browser: Browsers.macOS("Chrome"),
+        getMessage: async (key) => {
+            return {
+                conversation: 'Hello'
+            }
+        },
+        cachedGroupMetadata: async (jid) => groupCache.get(jid)
+    }
+
+    const sock = makeWASocket(socketConfig)
+
+    if (!sock.authState.creds.registered) {
+        let phoneNumber = await question('Please enter your WhatsApp phone number (e.g., 628xxxxxx): ')
+        phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
+
+        /** Delay is required before requesting pairing code per docs **/
+        setTimeout(async () => {
+            try {
+                const code = await sock.requestPairingCode(phoneNumber)
+                logger.ready(`Pairing code: ${code?.match(/.{1,4}/g)?.join('-') || code}`)
+            } catch (err) {
+                logger.error(`Failed to request pairing code: ${err.message}`)
+            }
+        }, 3000)
+    }
+
+    sock.ev.on('creds.update', saveCreds)
+
+    sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect } = update
+        if (connection === 'close') {
+            const statusCode = (lastDisconnect.error instanceof Boom)?.output?.statusCode
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut
+            const isConflict = statusCode === 409 || lastDisconnect.error?.message?.includes('conflict')
+
+            logger.warn(`Connection closed due to: ${lastDisconnect.error?.message || lastDisconnect.error}, reconnecting: ${shouldReconnect}`)
+
+            if (shouldReconnect) {
+                const delay = isConflict ? 5000 : 3000
+                if (isConflict) logger.info('Conflict detected! Waiting 5 seconds before reconnecting to clear old session...')
+                setTimeout(connectToWhatsApp, delay)
+            }
+        } else if (connection === 'open') {
+            logger.ready('Connected to WhatsApp via yebails socket!')
+        }
+    })
+
+    sock.ev.on('messages.upsert', async (m) => {
+        await handleMessage(sock, m)
+    })
+}
+
+/** Catch uncaught exceptions to prevent crashing **/
+process.on('uncaughtException', (err) => {
+    logger.error(`Uncaught Exception: ${err.message}`)
+})
+
+connectToWhatsApp()
