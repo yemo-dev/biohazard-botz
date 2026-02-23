@@ -2,35 +2,57 @@
 
 A powerful and extensible WhatsApp bot built with Baileys (`yemo-dev/yebails`).
 
-## Architecture Schema
+## 🏗️ Architecture Schema
 
 ```mermaid
 graph TD
-    A[WhatsApp Server] <-->|Baileys Socket| B(index.js - Core)
-    B -->|Initialization| C{Auth Config}
-    C -->|Pairing Code| D[User Phone]
-    B -->|Message Upsert| E[src/handler.js]
-    E -->|Metadata Parsing| F{Command Match?}
-    F -->|Yes| G[plugins/*.js]
-    F -->|No| H[logger.chat]
-    G -->|Execution| I[sock.sendMessage]
-    I -->|Response| A
+    %% Node Definitions
+    User((User))
+    WA[WhatsApp Cloud]
+    Core(index.js Core)
+    Handler{src/handler.js}
+    Plugins[[plugins Folder]]
+    Logs(logger.js)
+    Sessions[(Auth/Sessions)]
+
+    %% Flow Connections
+    User -.->|Sends Message| WA
+    WA <==>|yebails socket| Core
+    Core --- Sessions
+    Core ==>|Messages Upsert| Handler
     
-    subgraph "Internal Logic"
-    E -.->|Every 30m| J[Session Cleaner]
+    Handler -->|Parsed Metadata| Logs
+    Handler -->|Routing| Plugins
+    
+    Plugins -->|logic/execute| Core
+    Core -->|sock.sendMessage| WA
+    WA -.->|Response| User
+
+    %% Subgraphs
+    subgraph "Internal Processing"
+    Handler
+    Plugins
+    Logs
     end
+
+    subgraph "Persistence"
+    Sessions
+    end
+
+    %% Styles
+    style Core fill:#f9f,stroke:#333,stroke-width:2px
+    style Handler fill:#bbf,stroke:#333,stroke-width:2px
+    style Plugins fill:#dfd,stroke:#333,stroke-width:2px
+    style Sessions fill:#ffd,stroke:#333,stroke-width:2px
 ```
 
-## Internal Flow
+## 🚀 Installation & Setup
 
-1. **Core (`index.js`)**: Manages the connection to WhatsApp via `yemo-dev/yebails`, handles authentication (`auth_info_baileys`), and sets up a global 30-minute session cleanup task.
-2. **Handler (`src/handler.js`)**: Intercepts every incoming message, parses advanced metadata (mimetypes, quoted messages, sender info), and checks against the `src/config.js` settings.
-3. **Plugins (`plugins/`)**: Modular command files that are dynamically loaded. The handler routes valid commands to these files for execution.
-4. **Logger (`src/utils/logger.js`)**: A custom-built logger supporting Windows CMD with specific formatting for system info and user messages.
+Follow these steps to get your bot up and running in minutes.
 
-## Installation
+### 1. 📂 Clone & Install
 
-1. **Clone & Install**:
+Begin by cloning the repository and installing the necessary dependencies.
 
 ```bash
 git clone https://github.com/yemo-dev/biohazard-botz.git
@@ -38,5 +60,28 @@ cd biohazard-botz
 npm install
 ```
 
-1. **Configure**: Edit `src/config.js` to set your owner number and prefixes.
-2. **Run**: `npm start` and follow the pairing code in your terminal.
+### 2. ⚙️ Configuration
+
+Open `src/config.js` and customize your bot settings:
+
+- **ownerNumbers**: Add your WhatsApp number(s).
+- **prefixes**: Define which symbols trigger the bot (e.g., `!`).
+- **logChats**: Toggle to `false` to keep your terminal clean.
+
+### 3. 🏁 Run the Bot
+
+Start the application and link it to your WhatsApp account.
+
+```bash
+npm start
+```
+
+*Wait for the pairing code to appear and enter it in your Linked Devices section.*
+
+## 📂 Project Structure
+
+- **`index.js`**: Core connection and session management.
+- **`src/handler.js`**: Advanced message parsing and command routing.
+- **`src/config.js`**: Centralized bot settings.
+- **`plugins/`**: Modular command directory (Plug & Play).
+- **`src/utils/`**: Shared utilities like colors and loggers.
