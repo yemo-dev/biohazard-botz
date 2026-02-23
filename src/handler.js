@@ -124,9 +124,6 @@ export const handleMessage = async (sock, m) => {
             /** If owner-only command, skip if not owner **/
             if (command.ownerOnly && !isOwner) return
 
-            /** Log command execution **/
-            logger.chat(pushName || sender.split('@')[0], body, `${type} | Command`)
-
             await command.execute({
                 sock,
                 msg,

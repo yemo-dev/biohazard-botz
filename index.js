@@ -3,6 +3,8 @@ import pino from 'pino'
 import { Boom } from '@hapi/boom'
 import readline from 'readline'
 import NodeCache from 'node-cache'
+import fs from 'fs'
+import path from 'path'
 import logger from './src/utils/logger.js'
 import config from './src/config.js'
 import { handleMessage } from './src/handler.js'
@@ -97,6 +99,19 @@ async function connectToWhatsApp() {
                 const delay = isConflict ? 5000 : 3000
                 if (isConflict) logger.info('Conflict detected! Waiting 5 seconds before reconnecting to clear old session...')
                 setTimeout(connectToWhatsApp, delay)
+            } else {
+                /** Automatically delete session if logged out per User Rules **/
+                logger.warn('Device logged out. Automatically deleting stored session...')
+                try {
+                    const sessionDir = path.resolve(`./${config.sessionName}`)
+                    if (fs.existsSync(sessionDir)) {
+                        fs.rmSync(sessionDir, { recursive: true, force: true })
+                        logger.info('Session successfully deleted! Restarting bot to request new pairing code...')
+                    }
+                } catch (err) {
+                    logger.error(`Failed to delete session: ${err.message}`)
+                }
+                setTimeout(connectToWhatsApp, 3000)
             }
         } else if (connection === 'open') {
             logger.ready('Connected to WhatsApp via yebails socket!')
