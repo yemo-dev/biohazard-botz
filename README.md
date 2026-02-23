@@ -21,6 +21,40 @@ graph TD
     end
 ```
 
+## Project Schema
+
+```prisma
+// High-level structure of the Biohazard Botz logic
+
+model Plugin {
+  name        String   @id
+  aliases     String[]
+  description String
+  ownerOnly   Boolean  @default(false)
+  
+  // Execution Context
+  execute     Function @args(sock, msg, args, metadata)
+}
+
+model Config {
+  botName       String   @default("Biohazard Botz")
+  ownerNumbers  String[]
+  prefixes      String[]
+  sessionName   String   @unique
+  logChats      Boolean  @default(false)
+}
+
+model MessageMetadata {
+  sender        String
+  pushName      String
+  isGroup       Boolean
+  mimetype      String?
+  isQuoted      Boolean
+  quotedType    String?
+  quotedMimetype String?
+}
+```
+
 ## Internal Flow
 
 1. **Core (`index.js`)**: Manages the connection to WhatsApp via `yemo-dev/yebails`, handles authentication (`auth_info_baileys`), and sets up a global 30-minute session cleanup task.
