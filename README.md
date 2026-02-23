@@ -2,44 +2,41 @@
 
 A powerful and extensible WhatsApp bot built with Baileys (`yemo-dev/yebails`).
 
-## Features
+## Architecture Schema
 
-- **Dynamic Command Handler**: Easily add new commands in the `plugins/` directory.
-- **Auto Session Cleanup**: Automatically removes unnecessary session files every 30 minutes while keeping you logged in.
-- **Advanced Message Parsing**: Extract mimetypes, quoted messages, and group/sender info easily.
-- **System Monitoring**: Detailed `!ping` command with OS, RAM, and Latency info.
-- **Clean Logger**: Brighter, readable console output with Windows CMD support.
-- **Configurable**: Toggle chat logs and manage bot settings in `src/config.js`.
+```mermaid
+graph TD
+    A[WhatsApp Server] <-->|Baileys Socket| B(index.js - Core)
+    B -->|Initialization| C{Auth Config}
+    C -->|Pairing Code| D[User Phone]
+    B -->|Message Upsert| E[src/handler.js]
+    E -->|Metadata Parsing| F{Command Match?}
+    F -->|Yes| G[plugins/*.js]
+    F -->|No| H[logger.chat]
+    G -->|Execution| I[sock.sendMessage]
+    I -->|Response| A
+    
+    subgraph "Internal Logic"
+    E -.->|Every 30m| J[Session Cleaner]
+    end
+```
+
+## Internal Flow
+
+1. **Core (`index.js`)**: Manages the connection to WhatsApp via `yemo-dev/yebails`, handles authentication (`auth_info_baileys`), and sets up a global 30-minute session cleanup task.
+2. **Handler (`src/handler.js`)**: Intercepts every incoming message, parses advanced metadata (mimetypes, quoted messages, sender info), and checks against the `src/config.js` settings.
+3. **Plugins (`plugins/`)**: Modular command files that are dynamically loaded. The handler routes valid commands to these files for execution.
+4. **Logger (`src/utils/logger.js`)**: A custom-built logger supporting Windows CMD with specific formatting for system info and user messages.
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yemo-dev/biohazard-botz.git
-   cd biohazard-botz
-   ```
+1. **Clone & Install**:
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+    ```bash
+    git clone https://github.com/yemo-dev/biohazard-botz.git
+    cd biohazard-botz
+    npm install
+    ```
 
-3. Configure the bot:
-   Edit `src/config.js` to set your owner number and prefixes.
-
-4. Start the bot:
-   ```bash
-   npm start
-   ```
-
-5. Link your account:
-   Follow the pairing code instructions in the terminal.
-
-## Usage
-
-- Send `!ping` to check bot status.
-- Add new plugins in the `plugins/` folder to expand functionality.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+2. **Configure**: Edit `src/config.js` to set your owner number and prefixes.
+3. **Run**: `npm start` and follow the pairing code in your terminal.
