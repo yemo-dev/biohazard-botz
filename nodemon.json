@@ -1,0 +1,12 @@
+{
+    "ignore": [
+        "auth_info_baileys/*",
+        "node_modules/*",
+        ".yebails_cache/*",
+        "*.json",
+        "package-lock.json",
+        "npm-debug.log",
+        ".git/*"
+    ],
+    "ext": "js"
+}

@@ -80,8 +80,9 @@ npm start
 
 ## Project Structure
 
-- **index.js**: Core connection and session management.
-- **src/handler.js**: Advanced message parsing and command routing.
+- **index.js**: Core connection, session management, and auto-logout session deletion.
+- **src/handler.js**: Advanced message parsing (deduplicated) and command routing.
 - **src/config.js**: Centralized bot settings.
 - **plugins/**: Modular command directory (Plug and Play).
 - **src/utils/**: Shared utilities like colors and loggers.
+- **nodemon.json**: Optimized auto-restart configuration (watching only .js).

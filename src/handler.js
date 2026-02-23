@@ -1,8 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import NodeCache from 'node-cache'
 import config from './config.js'
 import logger from './utils/logger.js'
+
+const messageIdCache = new NodeCache({ stdTTL: 5 * 60, useClones: false })
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const pluginsDir = path.join(__dirname, '../plugins')
@@ -38,9 +41,14 @@ export const handleMessage = async (sock, m) => {
     try {
         if (!m.messages || !m.messages[0]) return
         const msg = m.messages[0]
+        if (!msg.key.id) return
 
         /** Ignore broadcast/status messages and non-realtime logs (like history cache) **/
         if (msg.key.remoteJid === 'status@broadcast' || m.type !== 'notify') return
+
+        /** Deduplicate messages to prevent double processing/logging **/
+        if (messageIdCache.has(msg.key.id)) return
+        messageIdCache.set(msg.key.id, true)
 
         /** Extract message text **/
         const type = Object.keys(msg.message || {})[0]
