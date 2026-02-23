@@ -1,8 +1,8 @@
-# Biohazard Botz
+# Biohazard Botz - Advanced Baileys WhatsApp Framework
 
-A powerful and extensible WhatsApp bot built with Baileys (`yemo-dev/yebails`).
+Biohazard Botz is a high-performance, modular, and lightweight WhatsApp bot framework built using the `yemo-dev/yebails` library. It focuses on stability, connection longevity, and an easy-to-expand plugin system.
 
-## 🏗️ Architecture Schema
+## Architecture Schema
 
 ```mermaid
 graph TD
@@ -46,11 +46,11 @@ graph TD
     style Sessions fill:#ffd,stroke:#333,stroke-width:2px
 ```
 
-## 🚀 Installation & Setup
+## Installation and Setup
 
 Follow these steps to get your bot up and running in minutes.
 
-### 1. 📂 Clone & Install
+### 1. Clone and Install
 
 Begin by cloning the repository and installing the necessary dependencies.
 
@@ -60,15 +60,15 @@ cd biohazard-botz
 npm install
 ```
 
-### 2. ⚙️ Configuration
+### 2. Configuration
 
 Open `src/config.js` and customize your bot settings:
 
 - **ownerNumbers**: Add your WhatsApp number(s).
-- **prefixes**: Define which symbols trigger the bot (e.g., `!`).
-- **logChats**: Toggle to `false` to keep your terminal clean.
+- **prefixes**: Define which symbols trigger the bot (e.g., !).
+- **logChats**: Toggle to false to keep your terminal clean.
 
-### 3. 🏁 Run the Bot
+### 3. Run the Bot
 
 Start the application and link it to your WhatsApp account.
 
@@ -78,10 +78,10 @@ npm start
 
 *Wait for the pairing code to appear and enter it in your Linked Devices section.*
 
-## 📂 Project Structure
+## Project Structure
 
-- **`index.js`**: Core connection and session management.
-- **`src/handler.js`**: Advanced message parsing and command routing.
-- **`src/config.js`**: Centralized bot settings.
-- **`plugins/`**: Modular command directory (Plug & Play).
-- **`src/utils/`**: Shared utilities like colors and loggers.
+- **index.js**: Core connection and session management.
+- **src/handler.js**: Advanced message parsing and command routing.
+- **src/config.js**: Centralized bot settings.
+- **plugins/**: Modular command directory (Plug and Play).
+- **src/utils/**: Shared utilities like colors and loggers.
