@@ -1,58 +1,22 @@
-# Biohazard Botz - Advanced Baileys WhatsApp Framework
+# Biohazard Botz - Advanced WhatsApp Framework
 
-Biohazard Botz is a high-performance, modular, and lightweight WhatsApp bot framework built using the `yemo-dev/yebails` library. It focuses on stability, connection longevity, and an easy-to-expand plugin system.
+Biohazard Botz is a high-performance, modular WhatsApp bot framework built using the `yemo-dev/yebails` library. It focuses on stability, connection longevity, and a powerful plugin-based architecture for effortless expansion.
 
-## Architecture Schema
+## Key Features
 
-```mermaid
-graph TD
-    %% Node Definitions
-    User((User))
-    WA[WhatsApp Cloud]
-    Core(index.js Core)
-    Handler{src/handler.js}
-    Plugins[[plugins Folder]]
-    Logs(logger.js)
-    Sessions[(Auth/Sessions)]
+- **High Speed Performance**: Engineered for rapid message processing and minimal latency.
+- **Plug-and-Play System**: Add or remove features instantly by dropping files into the `plugins/` directory.
+- **Advanced Owner Controls**: Built-in commands to toggle global bot accessibility (`.self` / `.public`).
+- **Persistent Connection**: Intelligent auto-reconnection and session state management.
+- **Professional Logs**: Clean terminal output with categorized logging systems.
 
-    %% Flow Connections
-    User -.->|Sends Message| WA
-    WA <==>|yebails socket| Core
-    Core --- Sessions
-    Core ==>|Messages Upsert| Handler
-    
-    Handler -->|Parsed Metadata| Logs
-    Handler -->|Routing| Plugins
-    
-    Plugins -->|logic/execute| Core
-    Core -->|sock.sendMessage| WA
-    WA -.->|Response| User
+---
 
-    %% Subgraphs
-    subgraph "Internal Processing"
-    Handler
-    Plugins
-    Logs
-    end
+## Installation & Setup
 
-    subgraph "Persistence"
-    Sessions
-    end
+Get your bot operational in three simple steps.
 
-    %% Styles
-    style Core fill:#f9f,stroke:#333,stroke-width:2px
-    style Handler fill:#bbf,stroke:#333,stroke-width:2px
-    style Plugins fill:#dfd,stroke:#333,stroke-width:2px
-    style Sessions fill:#ffd,stroke:#333,stroke-width:2px
-```
-
-## Installation and Setup
-
-Follow these steps to get your bot up and running in minutes.
-
-### 1. Clone and Install
-
-Begin by cloning the repository and installing the necessary dependencies.
+### 1. Clone and Install dependencies
 
 ```bash
 git clone https://github.com/yemo-dev/biohazard-botz.git
@@ -60,29 +24,28 @@ cd biohazard-botz
 npm install
 ```
 
-### 2. Configuration
+### 2. Configure System
 
-Open `src/config.js` and customize your bot settings:
+Modify `src/config.js` to set your primary parameters:
 
-- **ownerNumbers**: Add your WhatsApp number(s).
-- **prefixes**: Define which symbols trigger the bot (e.g., !).
-- **logChats**: Toggle to false to keep your terminal clean.
+- **ownerNumbers**: Your WhatsApp ID for admin privileges.
+- **prefixes**: Command triggers (e.g., `.` or `!`).
+- **logChats**: Toggle terminal message visibility.
 
-### 3. Run the Bot
-
-Start the application and link it to your WhatsApp account.
+### 3. Launch
 
 ```bash
 npm start
 ```
 
-*Wait for the pairing code to appear and enter it in your Linked Devices section.*
+*Link your device using the pairing code displayed in the terminal.*
 
-## Project Structure
+---
 
-- **index.js**: Core connection, session management, and auto-logout session deletion.
-- **src/handler.js**: Advanced message parsing (deduplicated) and command routing.
-- **src/config.js**: Centralized bot settings.
-- **plugins/**: Modular command directory (Plug and Play).
-- **src/utils/**: Shared utilities like colors and loggers.
-- **nodemon.json**: Optimized auto-restart configuration (watching only .js).
+## Technical Core
+
+- **`index.js`**: Primary orchestrator and socket engine.
+- **`src/handler.js`**: Command router and message parser.
+- **`src/config.js`**: Global configuration management.
+- **`plugins/`**: Feature-rich ecosystem for all bot commands.
+- **`src/utils/`**: Internal utilities and visual loggers.
