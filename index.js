@@ -7,7 +7,7 @@ import fs from 'fs'
 import path from 'path'
 import logger from './src/utils/logger.js'
 import config from './src/config.js'
-import { handleMessage } from './src/handler.js'
+import { handleMessage, loadPlugins } from './src/handler.js'
 
 /** Simple readline interface for interactive pairing code request **/
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
@@ -128,4 +128,10 @@ process.on('uncaughtException', (err) => {
     logger.error(`Uncaught Exception: ${err.message}`)
 })
 
-connectToWhatsApp()
+async function start() {
+    /** Load plugins and start bot directly for main branch **/
+    await loadPlugins()
+    await connectToWhatsApp()
+}
+
+start()

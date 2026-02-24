@@ -45,8 +45,10 @@ const loadPlugins = async () => {
     }
 }
 
-/** Initial load **/
-loadPlugins()
+/** Initial load - removed to be called after login manually **/
+// loadPlugins()
+
+export { loadPlugins }
 
 /** Main message handler **/
 export const handleMessage = async (sock, m) => {
