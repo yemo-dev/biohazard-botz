@@ -141,6 +141,12 @@ export const handleMessage = async (sock, m) => {
         if (command) {
             const isOwner = config.ownerNumbers.includes(sender.split('@')[0])
 
+            /** Default to public mode if not set **/
+            if (sock.public === undefined) sock.public = true
+
+            /** If in self mode, only allow owner **/
+            if (!sock.public && !isOwner) return
+
             /** If owner-only command, skip if not owner **/
             if (command.ownerOnly && !isOwner) return
 
