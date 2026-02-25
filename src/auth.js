@@ -17,18 +17,22 @@ export async function checkLogin(question) {
 
     /** Helper to render UI **/
     const renderUI = (msg = '', showExpiry = false, account = null) => {
-        /** More robust clear for various terminals **/
-        process.stdout.write('\x1B[2J\x1B[0f')
+        /** console.clear() is the standard way to clear Windows/generic terminals **/
+        console.clear()
+
         console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
         console.log(chalk.cyan('  [ BIOHAZARD ] ') + chalk.bold.white('SYSTEM ACCESS'))
         console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
+
         if (showExpiry && account) {
             const expiryStr = account.expired === 'unlimited' ? chalk.green('Unlimited') :
                 (isNaN(new Date(account.expired).getTime()) ? chalk.red('Invalid Date') : chalk.yellow(`Expires on ${account.expired}`))
-            console.log(chalk.white('  Account: ') + chalk.cyan(account.username))
-            console.log(chalk.white('  Status:  ') + expiryStr)
+
+            console.log(`  ${chalk.white('Account')} : ${chalk.cyan(account.username)}`)
+            console.log(`  ${chalk.white('Status')}  : ${expiryStr}`)
             console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
         }
+
         if (msg) console.log('\n' + msg)
     }
 
@@ -57,7 +61,7 @@ export async function checkLogin(question) {
 
         if (account) {
             if (isExpired(account.expired)) {
-                renderUI(chalk.bgRed.white.bold('  ACCESS EXPIRED: Please renew your license.  '), true, account)
+                renderUI(chalk.bgRed.white.bold('  LICENSE EXPIRED: Please renew your access.  '), true, account)
                 process.exit(1)
             }
             renderUI(chalk.green('  [✓] Session active. Resuming...'), true, account)
@@ -79,7 +83,7 @@ export async function checkLogin(question) {
 
         if (account) {
             if (isExpired(account.expired)) {
-                renderUI(chalk.bgRed.white.bold('  ACCESS EXPIRED: Please renew your license.  '), true, account)
+                renderUI(chalk.bgRed.white.bold('  LICENSE EXPIRED: Please renew your access.  '), true, account)
                 process.exit(1)
             }
             fs.writeFileSync(loginFile, JSON.stringify({ username: user, password: pass }, null, 2))
@@ -93,7 +97,7 @@ export async function checkLogin(question) {
         }
     }
 
-    renderUI(chalk.bgRed.white('  TERMINAL LOCKDOWN: Security breach detected.  '), false)
+    renderUI(chalk.bgRed.white.bold('  TERMINAL LOCKDOWN: Security breach detected.  '), false)
     console.log('')
     process.exit(1)
 }
