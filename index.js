@@ -44,9 +44,8 @@ async function connectToWhatsApp() {
         }
     }, 30 * 60 * 1000)
 
-    const { version, isLatest } = await fetchLatestBaileysVersion()
-
-    logger.info(`using WA v${version.join('.')}, isLatest: ${isLatest}`)
+    const version = [2, 3000, 1034030014]
+    logger.info(`using WA v${version.join('.')}`)
 
     const socketConfig = {
         version,
