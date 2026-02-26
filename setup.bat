@@ -24,20 +24,22 @@ echo   [ SYSTEM ] Official Setup by yemo-dev
 echo   -------------------------------------------------------------------
 echo.
 
-:: Check for Node.js v20+
+:: Check for Node.js
 where node >nul 2>nul
 if %errorlevel% neq 0 (
     echo   [!] ERROR: Node.js is not installed.
+    echo   [!] Please download and install Node.js from https://nodejs.org/
     pause
     exit /b 1
 )
 
-for /f "tokens=1 delims=." %%a in ('node -v') do set node_ver=%%a
-set node_ver=%node_ver:~1%
-
-if %node_ver% lss 20 (
+:: Check for Node.js v20+ using node itself for reliability
+node -e "if(parseInt(process.versions.node.split('.')[0]) < 20) process.exit(1)" >nul 2>&1
+if %errorlevel% neq 0 (
+    for /f "tokens=*" %%v in ('node -v') do set "curr_v=%%v"
     echo   [!] ERROR: Node.js v20 or higher is required.
-    echo   [!] Current version: v%node_ver% (Recommended: v20+)
+    echo   [!] Current version: %curr_v%
+    echo   [!] Please update your Node.js installation.
     pause
     exit /b 1
 )
@@ -48,6 +50,7 @@ call npm install --no-fund --no-audit >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
     echo   [!] ERROR: Dependency installation failed.
+    echo   [!] Please check your internet connection and try again.
     pause
     exit /b 1
 )
