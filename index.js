@@ -100,7 +100,12 @@ async function connectToWhatsApp() {
             const shouldReconnect = statusCode !== DisconnectReason.loggedOut
             const isConflict = statusCode === 409 || lastDisconnect.error?.message?.includes('conflict')
 
-            logger.warn(`Connection closed due to: ${lastDisconnect.error?.message || lastDisconnect.error}, reconnecting: ${shouldReconnect}`)
+            const errMessage = lastDisconnect.error?.message || lastDisconnect.error || 'Unknown error'
+            logger.warn(`Connection closed due to: ${errMessage}, reconnecting: ${shouldReconnect}`)
+
+            if (lastDisconnect.error) {
+                // Log full detail to file via logger.warn/error
+            }
 
             if (shouldReconnect) {
                 const delay = isConflict ? 5000 : 3000
@@ -132,7 +137,11 @@ async function connectToWhatsApp() {
 
 /** Catch uncaught exceptions to prevent crashing **/
 process.on('uncaughtException', (err) => {
-    logger.error(`Uncaught Exception: ${err.message}`)
+    logger.error(`Uncaught Exception: ${err.message}\nStack: ${err.stack}`)
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error(`Unhandled Rejection at: ${promise}\nReason: ${reason}`)
 })
 
 async function start() {
