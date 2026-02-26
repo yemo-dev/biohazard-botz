@@ -96,8 +96,8 @@ async function connectToWhatsApp() {
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update
         if (connection === 'close') {
-            const statusCode = (lastDisconnect.error instanceof Boom)?.output?.statusCode
-            const shouldReconnect = statusCode !== DisconnectReason.loggedOut
+            const statusCode = (lastDisconnect.error && lastDisconnect.error.output) ? lastDisconnect.error.output.statusCode : lastDisconnect.error?.statusCode
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut && statusCode !== DisconnectReason.forbidden
             const isConflict = statusCode === 409 || lastDisconnect.error?.message?.includes('conflict')
 
             const errMessage = lastDisconnect.error?.message || lastDisconnect.error || 'Unknown error'
