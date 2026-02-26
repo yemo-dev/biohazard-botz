@@ -64,7 +64,7 @@ export async function checkLogin(question) {
                 renderUI(chalk.bgRed.white.bold('  LICENSE EXPIRED: Please renew your access.  '), true, account)
                 process.exit(1)
             }
-            renderUI(chalk.green('  [✓] Session active. Resuming...'), true, account)
+            renderUI(chalk.green('  [+] Session active. Resuming...'), true, account)
             await new Promise(resolve => setTimeout(resolve, 3000))
             return true
         }
@@ -89,7 +89,7 @@ export async function checkLogin(question) {
             fs.writeFileSync(loginFile, JSON.stringify({ username: user, password: pass }, null, 2))
             renderUI(chalk.yellow('  [•] Identification verified. Initializing system...'), true, account)
             await new Promise(resolve => setTimeout(resolve, 3000))
-            renderUI(chalk.green('  [✓] Access granted. Welcome back, Admin.'), true, account)
+            renderUI(chalk.green('  [+] Access granted. Welcome back, Admin.'), true, account)
             return true
         } else {
             attempts++
