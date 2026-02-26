@@ -61,7 +61,7 @@ export async function checkLogin(question) {
 
         if (account) {
             if (isExpired(account.expired)) {
-                renderUI(chalk.bgRed.white.bold('  LICENSE EXPIRED: Please renew your access.  '), true, account)
+                renderUI(chalk.red('  [!] LICENSE EXPIRED: Please renew your access.  '), true, account)
                 process.exit(1)
             }
             renderUI(chalk.green('  [+] Session active. Resuming...'), true, account)
@@ -83,21 +83,21 @@ export async function checkLogin(question) {
 
         if (account) {
             if (isExpired(account.expired)) {
-                renderUI(chalk.bgRed.white.bold('  LICENSE EXPIRED: Please renew your access.  '), true, account)
+                renderUI(chalk.red('  [!] LICENSE EXPIRED: Please renew your access.  '), true, account)
                 process.exit(1)
             }
             fs.writeFileSync(loginFile, JSON.stringify({ username: user, password: pass }, null, 2))
-            renderUI(chalk.yellow('  [•] Identification verified. Initializing system...'), true, account)
+            renderUI(chalk.yellow('  [*] Identification verified. Initializing system...'), true, account)
             await new Promise(resolve => setTimeout(resolve, 3000))
             renderUI(chalk.green('  [+] Access granted. Welcome back, Admin.'), true, account)
             return true
         } else {
             attempts++
-            lastError = chalk.red(`  [✗] Credentials invalid. (${attempts}/3 attempts)`)
+            lastError = chalk.red(`  [x] Credentials invalid. (${attempts}/3 attempts)`)
         }
     }
 
-    renderUI(chalk.bgRed.white.bold('  TERMINAL LOCKDOWN: Security breach detected.  '), false)
+    renderUI(chalk.red('  [x] TERMINAL LOCKDOWN: Security breach detected.  '), false)
     console.log('')
     process.exit(1)
 }
