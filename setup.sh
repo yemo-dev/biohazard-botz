@@ -17,11 +17,17 @@ echo "  [ SYSTEM ] Official Setup by yemo-dev"
 echo "  -------------------------------------------------------------------"
 echo ""
 
-# Check for Node.js
+# Check for Node.js v20+
 if ! command -v node &> /dev/null
 then
     echo "  [!] ERROR: Node.js is not installed."
-    echo "  [!] Please install Node.js to continue."
+    exit 1
+fi
+
+node_ver=$(node -v | cut -d'.' -f1 | sed 's/v//')
+if [ "$node_ver" -lt 20 ]; then
+    echo "  [!] ERROR: Node.js v20 or higher is required."
+    echo "  [!] Current version: v$node_ver (Recommended: v20+)"
     exit 1
 fi
 

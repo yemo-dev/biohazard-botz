@@ -1,3 +1,10 @@
+/** Minimum Node.js Requirement Check **/
+if (parseInt(process.versions.node.split('.')[0]) < 20) {
+    console.log('\x1b[31m[!] ERROR: Node.js v20 or higher is required.\x1b[0m')
+    console.log(`[!] Current version: v${process.versions.node}`)
+    process.exit(1)
+}
+
 import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } from 'baileys'
 import pino from 'pino'
 import { Boom } from '@hapi/boom'

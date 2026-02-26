@@ -24,11 +24,20 @@ echo   [ SYSTEM ] Official Setup by yemo-dev
 echo   -------------------------------------------------------------------
 echo.
 
-:: Check for Node.js
+:: Check for Node.js v20+
 where node >nul 2>nul
 if %errorlevel% neq 0 (
-    echo   [!] ERROR: Node.js is not installed or not in PATH.
-    echo   [!] Please install Node.js from https://nodejs.org/
+    echo   [!] ERROR: Node.js is not installed.
+    pause
+    exit /b 1
+)
+
+for /f "tokens=1 delims=." %%a in ('node -v') do set node_ver=%%a
+set node_ver=%node_ver:~1%
+
+if %node_ver% lss 20 (
+    echo   [!] ERROR: Node.js v20 or higher is required.
+    echo   [!] Current version: v%node_ver% (Recommended: v20+)
     pause
     exit /b 1
 )
