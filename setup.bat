@@ -33,9 +33,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo   [1/2] Installing core dependencies...
-echo.
-call npm install --no-fund --no-audit
+echo   [1/2] Installing core dependencies (Silent)...
+call npm install --no-fund --no-audit >nul 2>&1
 
 if %errorlevel% neq 0 (
     echo.
@@ -48,7 +47,7 @@ echo.
 echo   [2/2] System ready. Launching Biohazard Botz...
 echo   -------------------------------------------------------------------
 echo.
-npm start
+node index.js
 
 pause
 endlocal

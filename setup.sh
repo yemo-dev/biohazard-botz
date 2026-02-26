@@ -25,9 +25,8 @@ then
     exit 1
 fi
 
-echo "  [1/2] Installing core dependencies..."
-echo ""
-npm install --no-fund --no-audit
+echo "  [1/2] Installing core dependencies (Silent)..."
+npm install --no-fund --no-audit > /dev/null 2>&1
 
 if [ $? -ne 0 ]; then
     echo ""
@@ -39,4 +38,4 @@ echo ""
 echo "  [2/2] System ready. Launching Biohazard Botz..."
 echo "  -------------------------------------------------------------------"
 echo ""
-npm start
+node index.js
