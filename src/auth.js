@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
 
-const CRED_URL = 'https://raw.githubusercontent.com/yemo-dev/auth/main/credentials.json'
+const CRED_URL = 'https://raw.githubusercontent.com/yemo-dev/auth/refs/heads/main/credentials.json'
 
 /**
  * Terminal Authentication System
@@ -20,20 +20,20 @@ export async function checkLogin(question) {
         /** console.clear() is the standard way to clear Windows/generic terminals **/
         console.clear()
 
-        console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
-        console.log(chalk.cyan('  [ BIOHAZARD ] ') + chalk.bold.white('SYSTEM ACCESS'))
-        console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
+        console.log(chalk.gray('  ──────────────────────────────'))
+        console.log(chalk.cyan('  [ BIOHAZARD ] ') + chalk.bold.white('ACCESS'))
+        console.log(chalk.gray('  ──────────────────────────────'))
 
         if (showExpiry && account) {
             const expiryStr = account.expired === 'unlimited' ? chalk.green('Unlimited') :
                 (isNaN(new Date(account.expired).getTime()) ? chalk.red('Invalid Date') : chalk.yellow(`Expires on ${account.expired}`))
 
-            console.log(`  ${chalk.white('Account')} : ${chalk.cyan(account.username)}`)
-            console.log(`  ${chalk.white('Status')}  : ${expiryStr}`)
-            console.log(chalk.gray('  ──────────────────────────────────────────────────────────'))
+            console.log(`  ${chalk.white('User')}   : ${chalk.cyan(account.username)}`)
+            console.log(`  ${chalk.white('Status')} : ${expiryStr}`)
+            console.log(chalk.gray('  ──────────────────────────────'))
         }
 
-        if (msg) console.log('\n' + msg)
+        if (msg) console.log('  ' + msg)
     }
 
     /** Expiration helper **/
@@ -91,7 +91,7 @@ export async function checkLogin(question) {
             fs.writeFileSync(loginFile, JSON.stringify({ username: user, password: pass }, null, 2))
             renderUI(chalk.yellow('  [*] Identification verified. Initializing system...'), true, account)
             await new Promise(resolve => setTimeout(resolve, 3000))
-            renderUI(chalk.green('  [+] Access granted. Welcome back, Admin.'), true, account)
+            renderUI(chalk.green(`  [+] Access granted. Welcome back, ${account.username}.`), true, account)
             return true
         } else {
             attempts++
