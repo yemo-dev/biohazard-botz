@@ -94,8 +94,9 @@ export const handleMessage = async (sock, m) => {
         const isGroup = msg.key.remoteJid.endsWith('@g.us')
         const sender = isGroup ? msg.key.participant : msg.key.remoteJid
         const pushName = msg.pushName || 'User'
+        const botJid = sock.user?.id?.split(':')[0] + '@s.whatsapp.net'
+        const isBot = msg.key.fromMe === true
 
-        /** Cached groupMetadata — prevents WA rate limiting (overlimit) **/
         const getGroupMetadata = async (jid) => {
             const cached = sock._groupCache?.get(jid)
             if (cached) return cached
@@ -108,6 +109,20 @@ export const handleMessage = async (sock, m) => {
                 return null
             }
         }
+
+        let groupMetadata = null
+        let isAdmin = false
+        let isBotAdmin = false
+        if (isGroup) {
+            groupMetadata = await getGroupMetadata(msg.key.remoteJid)
+            if (groupMetadata) {
+                const admins = groupMetadata.participants.filter(p => p.admin).map(p => p.id)
+                isAdmin = admins.includes(sender)
+                isBotAdmin = admins.includes(botJid)
+            }
+        }
+
+        const react = (emoji) => sock.sendMessage(msg.key.remoteJid, { react: { text: emoji, key: msg.key } })
 
         /** Check for quoted messages **/
         const isQuoted = type === 'extendedTextMessage' && msg.message.extendedTextMessage.contextInfo != null
@@ -145,6 +160,7 @@ export const handleMessage = async (sock, m) => {
         /** Extract command and arguments **/
         const args = body.slice(prefix.length).trim().split(/ +/)
         const cmdName = args.shift().toLowerCase()
+        const text = args.join(' ')
 
         /** Find exactly matching plugin alias/name **/
         let command = null
@@ -171,18 +187,25 @@ export const handleMessage = async (sock, m) => {
                 sock,
                 msg,
                 args,
+                text,
                 body,
                 config,
                 isOwner,
+                isBot,
                 isGroup,
+                isAdmin,
+                isBotAdmin,
                 sender,
+                botJid,
                 pushName,
                 mimetype,
                 isQuoted,
                 quotedMsg,
                 quotedType,
                 quotedMimetype,
-                getGroupMetadata
+                groupMetadata,
+                getGroupMetadata,
+                react
             })
         }
     } catch (err) {
