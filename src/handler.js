@@ -94,6 +94,20 @@ export const handleMessage = async (sock, m) => {
         const sender = isGroup ? msg.key.participant : msg.key.remoteJid
         const pushName = msg.pushName || 'User'
 
+        /** Cached groupMetadata — prevents WA rate limiting (overlimit) **/
+        const getGroupMetadata = async (jid) => {
+            const cached = sock._groupCache?.get(jid)
+            if (cached) return cached
+            try {
+                const meta = await sock.groupMetadata(jid)
+                sock._groupCache?.set(jid, meta)
+                return meta
+            } catch (err) {
+                logger.warn(`groupMetadata fetch failed for ${jid}: ${err.message}`)
+                return null
+            }
+        }
+
         /** Check for quoted messages **/
         const isQuoted = type === 'extendedTextMessage' && msg.message.extendedTextMessage.contextInfo != null
         let quotedMsg = null
@@ -166,7 +180,8 @@ export const handleMessage = async (sock, m) => {
                 isQuoted,
                 quotedMsg,
                 quotedType,
-                quotedMimetype
+                quotedMimetype,
+                getGroupMetadata
             })
         }
     } catch (err) {

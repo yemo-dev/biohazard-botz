@@ -22,6 +22,7 @@ const rl = readline.createInterface({ input: process.stdin, output: process.stdo
 const question = (text) => new Promise((resolve) => rl.question(text, resolve))
 
 const msgRetryCounterCache = new NodeCache()
+/** Group metadata cache — 5 min TTL to prevent WA rate limiting **/
 const groupCache = new NodeCache({ stdTTL: 5 * 60, useClones: false })
 
 async function connectToWhatsApp() {
@@ -75,6 +76,9 @@ async function connectToWhatsApp() {
     }
 
     const sock = makeWASocket(socketConfig)
+
+    /** Attach cache to sock so handler can access it **/
+    sock._groupCache = groupCache
 
     if (!sock.authState.creds.registered) {
         let phoneNumber = await question('Please enter your WhatsApp phone number (e.g., 628xxxxxx): ')
