@@ -40,12 +40,6 @@ async function videoToWebp(media) {
     return buff
 }
 
-/**
- * Write exif metadata to WebP sticker
- * @param {Buffer} media - Media buffer
- * @param {{ packname: string, author: string }} data - Sticker metadata
- * @returns {Promise<string>} Output file path
- */
 async function writeExif(media, data) {
     const fileType = await fileTypeFromBuffer(media)
     const wMedia = /webp/.test(fileType.mime) ? media
@@ -78,4 +72,10 @@ async function writeExif(media, data) {
     }
 }
 
-export { imageToWebp, videoToWebp, writeExif }
+const makeSticker = async (sock, jid, buffer, { packname = 'BIOHAZARD-BOTZ', author = 'yemo-dev', quoted } = {}) => {
+    const stickerPath = await writeExif(buffer, { packname, author })
+    await sock.sendMessage(jid, { sticker: { url: stickerPath } }, { quoted })
+    fs.unlinkSync(stickerPath)
+}
+
+export { imageToWebp, videoToWebp, writeExif, makeSticker }
