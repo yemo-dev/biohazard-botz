@@ -20,6 +20,7 @@
     "jimp": "^0.16.13",
     "music-metadata": "^11.12.1",
     "node-cache": "^5.1.2",
+    "node-webpmux": "^3.1.9",
     "pino": "^8.16.1",
     "pino-pretty": "^13.1.3"
   },
