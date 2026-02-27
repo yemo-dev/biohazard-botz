@@ -52,7 +52,7 @@ async function connectToWhatsApp() {
         }
     }, 30 * 60 * 1000)
 
-    const version = [2, 3000, 1034030014]
+    const version = [2, 3000, 1034074495]
     logger.info(`using WA v${version.join('.')}`)
 
     const socketConfig = {
