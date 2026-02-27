@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import NodeCache from 'node-cache'
 import config from './config.js'
 import logger from './utils/logger.js'
-import { makeFakeContact, makeFakeCart, makeFakeEvent, makeReply } from './utils/msgHelper.js'
+
 
 const messageIdCache = new NodeCache({ stdTTL: 5 * 60, useClones: false })
 
@@ -109,12 +109,6 @@ export const handleMessage = async (sock, m) => {
             }
         }
 
-        //================= { FAKE MESSAGES } =================\
-        const fkontak = makeFakeContact(msg.key.remoteJid, msg.pushName)
-        const ftroli = makeFakeCart(msg.key.remoteJid)
-        const fqevent = makeFakeEvent(msg.key.remoteJid)
-        const reply = makeReply(sock, msg.key.remoteJid, ftroli)
-
         /** Check for quoted messages **/
         const isQuoted = type === 'extendedTextMessage' && msg.message.extendedTextMessage.contextInfo != null
         let quotedMsg = null
@@ -188,11 +182,7 @@ export const handleMessage = async (sock, m) => {
                 quotedMsg,
                 quotedType,
                 quotedMimetype,
-                getGroupMetadata,
-                reply,
-                fkontak,
-                ftroli,
-                fqevent
+                getGroupMetadata
             })
         }
     } catch (err) {
