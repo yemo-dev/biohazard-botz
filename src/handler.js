@@ -47,7 +47,7 @@ const loadPlugins = async () => {
 }
 
 /** Initial load - removed to be called after login manually **/
-// loadPlugins()
+
 
 export { loadPlugins }
 

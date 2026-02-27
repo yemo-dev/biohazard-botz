@@ -81,7 +81,8 @@ async function connectToWhatsApp() {
     sock._groupCache = groupCache
 
     if (!sock.authState.creds.registered) {
-        let phoneNumber = await question('Please enter your WhatsApp phone number (e.g., 628xxxxxx): ')
+        console.log('Please enter your WhatsApp phone number (e.g., 628xxxxxx): ')
+        let phoneNumber = await question('')
         phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
 
         /** Delay is required before requesting pairing code per docs **/
@@ -108,7 +109,6 @@ async function connectToWhatsApp() {
             logger.warn(`Connection closed due to: ${errMessage}, reconnecting: ${shouldReconnect}`)
 
             if (lastDisconnect.error) {
-                // Log full detail to file via logger.warn/error
             }
 
             if (shouldReconnect) {

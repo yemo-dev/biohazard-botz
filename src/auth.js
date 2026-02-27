@@ -76,8 +76,10 @@ export async function checkLogin(question) {
         renderUI(lastError, false)
 
         console.log(chalk.white('  >> Authentication Required'))
-        const user = await question(chalk.cyan('  username: '))
-        const pass = await question(chalk.cyan('  password: '))
+        console.log(chalk.cyan('  username: '))
+        const user = await question('')
+        console.log(chalk.cyan('  password: '))
+        const pass = await question('')
 
         const account = credentials.find(c => c.username === user && c.password === pass)
 
