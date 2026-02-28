@@ -5,7 +5,9 @@ export default {
         if (!isGroup) return
         const groupMetadata = await sock.groupMetadata(msg.key.remoteJid)
         const participants = groupMetadata.participants
-        const isAdmin = participants.find(p => p.id === sender)?.admin != null || isOwner
+        const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net'
+        const botAdmin = participants.find(p => p.id === botId || p.jid === botId)?.admin != null
+        const isAdmin = participants.find(p => p.id === sender || p.jid === sender)?.admin != null || isOwner
 
         if (!isAdmin) return
 

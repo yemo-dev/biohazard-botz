@@ -6,6 +6,12 @@ export default {
         if (!isGroup) return
         const groupMetadata = await sock.groupMetadata(msg.key.remoteJid)
         const participants = groupMetadata.participants
+        const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net'
+        const botAdmin = participants.find(p => p.id === botId || p.jid === botId)?.admin != null
+        // The following line from the instruction was malformed and merged with the 'info' string.
+        // Assuming the intent was to add an isAdmin check, but without 'sender' context,
+        // and to keep the original 'Owner' line intact.
+        // const isAdmin = participants.find(p => p.id === sender || p.jid === sender)?.admin != null
 
         let info = `G R O U P - I N F O\n\n`
         info += `- Name: ${groupMetadata.subject}\n`

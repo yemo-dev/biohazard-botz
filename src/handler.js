@@ -116,7 +116,7 @@ export const handleMessage = async (sock, m) => {
         if (isGroup) {
             groupMetadata = await getGroupMetadata(msg.key.remoteJid)
             if (groupMetadata) {
-                const admins = groupMetadata.participants.filter(p => p.admin).map(p => p.id)
+                const admins = groupMetadata.participants.filter(p => p.admin).map(p => p.id).concat(groupMetadata.participants.filter(p => p.admin).map(p => p.jid))
                 isAdmin = admins.includes(sender)
                 isBotAdmin = admins.includes(botJid)
             }
