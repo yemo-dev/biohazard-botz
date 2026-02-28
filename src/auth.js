@@ -20,9 +20,9 @@ export async function checkLogin(question) {
         /** console.clear() is the standard way to clear Windows/generic terminals **/
         console.clear()
 
-        console.log(chalk.gray('  ──────────────────────────────'))
+        console.log(chalk.gray('  ─────────────────────────'))
         console.log(chalk.cyan('  [ BIOHAZARD ] ') + chalk.bold.white('ACCESS'))
-        console.log(chalk.gray('  ──────────────────────────────'))
+        console.log(chalk.gray('  ─────────────────────────'))
 
         if (showExpiry && account) {
             const expiryStr = account.expired === 'unlimited' ? chalk.green('Unlimited') :
@@ -30,7 +30,7 @@ export async function checkLogin(question) {
 
             console.log(`  ${chalk.white('User')}   : ${chalk.cyan(account.username)}`)
             console.log(`  ${chalk.white('Status')} : ${expiryStr}`)
-            console.log(chalk.gray('  ──────────────────────────────'))
+            console.log(chalk.gray('  ─────────────────────────'))
         }
 
         if (msg) console.log('  ' + msg)

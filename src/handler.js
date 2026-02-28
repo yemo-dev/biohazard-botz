@@ -148,7 +148,7 @@ export const handleMessage = async (sock, m) => {
         const prefix = config.prefixes.find(p => body.startsWith(p))
         if (!prefix) {
             /** Log normal chat (non-command) if enabled **/
-            if (config.logChats) {
+            if (config.logChats === true || config.logChats === 'true') {
                 logger.chat(pushName || sender.split('@')[0], body, type)
             }
             return
